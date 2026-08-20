@@ -85,7 +85,7 @@ then exported the executable file
 | **File name** | `40group.tiff` (actually a PE executable) |
 | **SHA256 hash** | `8d5d36c8ffb0a9c81b145aa40c1ff3475702fb0b5f9e08e0577bdc405087e635` |
 | **File size** | 389 KB |
-| **VirusTotal detection ratio** | 49/70 |
+| **VirusTotal detection ratio** | 61/70 |
 | **VirusTotal link** | `https://www.virustotal.com/gui/file/8d5d36c8ffb0a9c81b145aa40c1ff3475702fb0b5f9e08e0577bdc405087e635` |
 | **Malware family (if identified by VT)** | Flagged broadly as Trojan (varies by engine) |
 
@@ -105,3 +105,34 @@ then exported the executable file
 | Host Involved | Hostname | Windows Username |
 |---|---|---|
 | `10.11.11.203` | `Tucker-Win7-PC` | `candice.tucker` |
+
+
+## 7. Indicators of Compromise (IOC) Summary
+
+| Type | Indicator |
+|---|---|
+| **File hash (SHA256)** | `8d5d36c8ffb0a9c81b145aa40c1ff3475702fb0b5f9e08e0577bdc405087e635` |
+| **Malicious URL** | `http://acjabogados.com/40group.tiff` |
+| **C2 IP(s)** | `5.188.108.58`, `138.201.6.195` |
+| **Infected host IP** | `10.11.11.203` (`Tucker-Win7-PC` / `candice.tucker`) |
+
+---
+
+## 8. Recommendations
+
+- Block identified C2 IP(s) at the perimeter firewall.
+- Block/flag `acjabogados.com` and the malicious URL.
+- Isolate and reimage `Tucker-Win7-PC`.
+- Reset credentials for `candice.tucker`.
+- Hunt for the SHA256 hash across the environment using an EDR sweep.
+
+---
+
+## Appendix: Wireshark Filters Used
+
+```text
+http.request and ip.addr eq <ip>
+ip.src eq <ip>
+kerberos.CNameString and ip.addr eq <ip>
+ip contains "This program"
+ip.addr eq <infected host> and !(ip.dst eq 10.11.11.11)
