@@ -59,9 +59,49 @@ then exported the executable file
    <img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/4ca7a04b-18dc-487d-a321-64c82adf97cd" />
 
 
-9. Filtered traffic using:
-   ```text
-   ip.addr eq 10.11.11.203 and !(ip.dst eq 10.11.11.0/24)
+9.  To find the public ip address that the executable file tried connecting to after clicking the file:
+   `ip.addr eq 10.11.11.203 and !(ip.dst eq 10.11.11.0/24)`
 
-<img width="3822" height="1875" alt="image" src="https://github.com/user-attachments/assets/4779b096-2252-429a-8493-6c998a9c0656" />
+<img width="3822" height="1875" alt="image" src="https://github.com/user-attachments/assets/4779b096-2252-429a-8493-6c998a9c0656" /> 
 
+## 4. Host Fingerprinting
+
+| IP Address | Hostname | OS / Device Type | Evidence (filter used) |
+|---|---|---|---|
+| `10.11.11.94` | — | ChromeOS (Chromebook) | `http.request and ip.addr eq 10.11.11.94` |
+| `10.11.11.121` | — | Android 9, Samsung Galaxy Note 8 (SM-N950U) | `http.request and ip.addr eq 10.11.11.121` |
+| `10.11.11.145` | — | Motorola (MAC OUI) | `ip.src eq 10.11.11.145` → Ethernet II source |
+| `10.11.11.179` | — | macOS 10.15.1 (Catalina), Mac | `http.request and ip.addr eq 10.11.11.179` |
+| `10.11.11.195` | — | Windows 10 | `http.request and ip.addr eq 10.11.11.195` |
+| `10.11.11.200` | `GILBERT-WIN7-PC` | Windows 7 — user: `brandon.gilbert` | `kerberos.CNameString and ip.addr eq 10.11.11.200` |
+| `10.11.11.217` | — | iPadOS 13.2.2, iPad | `http.request and ip.addr eq 10.11.11.217` |
+
+## 5. Malicious File Download
+
+| Field | Value |
+|---|---|
+| **Host that downloaded the file** | `10.11.11.203` (Windows 7) |
+| **Full URL** | `http://acjabogados.com/40group.tiff` |
+| **File name** | `40group.tiff` (actually a PE executable) |
+| **SHA256 hash** | `8d5d36c8ffb0a9c81b145aa40c1ff3475702fb0b5f9e08e0577bdc405087e635` |
+| **File size** | 389 KB |
+| **VirusTotal detection ratio** | 49/70 |
+| **VirusTotal link** | `https://www.virustotal.com/gui/file/8d5d36c8ffb0a9c81b145aa40c1ff3475702fb0b5f9e08e0577bdc405087e635` |
+| **Malware family (if identified by VT)** | Flagged broadly as Trojan (varies by engine) |
+
+**Evidence:** Show Image · Show Image · Show Image
+
+---
+
+## 6. Post-Infection / C2 Traffic
+
+| Public IP Contacted | Port | Protocol | Notes |
+|---|---:|---|---|
+| `5.188.108.58` | `443` | TCP | Repeated SYN + retransmissions, no server reply |
+| `138.201.6.195` | `443` | TCP | Repeated SYN + retransmissions, no server reply |
+
+### Infected Host
+
+| Host Involved | Hostname | Windows Username |
+|---|---|---|
+| `10.11.11.203` | `Tucker-Win7-PC` | `candice.tucker` |
