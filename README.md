@@ -20,20 +20,27 @@ The host was identified via Kerberos traffic as **`Tucker-Win7-PC`**, used by do
 
 ## 3. Methodology
 
-1. Loaded the PCAP in Wireshark and reviewed **Statistics → Protocol Hierarchy** and **Statistics → Conversations** to get an overview of traffic volume and protocols in use. **Show Image**
+1. Loaded the PCAP in Wireshark and reviewed **Statistics → Protocol Hierarchy** and **Statistics → Conversations** to get an overview of traffic volume and protocols in use.
 
-2. Filtered HTTP requests per host (`http.request and ip.addr eq <ip>`) and followed TCP streams to extract User-Agent strings for OS/device fingerprinting. **Show Image**
 
-3. Reviewed MAC address vendor prefixes (Ethernet II source field) for devices without identifiable HTTP traffic.
+    <img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/941a9d75-162a-42f9-a056-91a5c5c6a080" />
+ **Statistics → Protocol Hierarchy**
+   
+   <img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/a0238d9b-a2e7-47e2-a797-0440e0556db4" />
+ **Statistics → Conversations**
 
-4. Filtered `kerberos.CNameString` traffic to map Windows hostnames and domain usernames to IP addresses. **Show Image**
+1. Filtered HTTP requests per host (`http.request and ip.addr eq <ip>`) and followed TCP streams to extract User-Agent strings for OS/device fingerprinting. **Show Image**
 
-5. Identified the malicious download using `ip contains "This program"` to catch the **"MZ / This program cannot be run in DOS mode"** signature of a PE executable inside HTTP traffic.
+4. Reviewed MAC address vendor prefixes (Ethernet II source field) for devices without identifiable HTTP traffic.
 
-6. Exported the object (**File → Export Objects → HTTP**) and computed its SHA256 hash with `shasum -a 256`.
+5. Filtered `kerberos.CNameString` traffic to map Windows hostnames and domain usernames to IP addresses. **Show Image**
 
-7. Checked the hash against **VirusTotal** for detection results.
+6. Identified the malicious download using `ip contains "This program"` to catch the **"MZ / This program cannot be run in DOS mode"** signature of a PE executable inside HTTP traffic.
 
-8. Filtered traffic using:
+7. Exported the object (**File → Export Objects → HTTP**) and computed its SHA256 hash with `shasum -a 256`.
+
+8. Checked the hash against **VirusTotal** for detection results.
+
+9. Filtered traffic using:
    ```text
    ip.addr eq <infected host> and !(ip.dst eq 10.11.11.1)
